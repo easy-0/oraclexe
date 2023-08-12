@@ -23,7 +23,19 @@ JOIN AvgSalByDept
 ON d.department_id = AvgSalByDept.department_id
 ;
 
-
+-- WITH 절로 계층표현
+WITH RecrusiveCTE (id, name, manager_id, depth) AS (
+    SELECT employee_id, last_name, manager_id, 0
+    FROM employees
+    WHERE manager_id IS NULL -- 최상위 매니저
+    UNION ALL
+    SELECT e.employee_id, e.last_name, e.manager_id, rc.depth + 1
+    FROM employees e
+    INNER JOIN RecrusiveCTE rc ON e.manager_id = rc.id
+)
+SELECT id, name, manager_id, depth
+FROM RecrusiveCTE
+;
 
 
 
