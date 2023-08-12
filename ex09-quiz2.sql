@@ -20,21 +20,27 @@ GROUP BY d.department_name;
 -- 4. 각 부서의 이름(department_name)과 해당 부서의 최대 급여(max_salary) 조회하기
 SELECT d.department_name, MAX(e.salary) AS max_salary
 FROM departments d JOIN employees e
-ON d.department_id = e.employee_id
+ON d.department_id = e.department_id
 GROUP BY d.department_name;
 
--- 5. 각 직원의 성(last_name)과 해당 직원이 속한 부서의 최소 급여(min_salary) 조회하기 ???
+-- 5. 각 직원의 성(last_name)과 해당 직원이 속한 부서의 최소 급여(min_salary) 조회하기 ??? 
+/*
 SELECT e.last_name, d.department_name, e.salary AS min_salary
-FROM departments d LEFT OUTER JOIN employees e
+FROM departments d JOIN employees e
 ON e.department_id = d.department_id
 WHERE e.salary = (SELECT MIN(salary) 
                     FROM employees
                     WHERE e.department_id = department_id
                     GROUP BY department_id)
 ;
+1. 테이블을 따로 나눠 어떻게 조인할지 생각하기
+subquery로 join해서 해결하기
+*/
 
 SELECT department_id, MIN(salary) FROM employees GROUP BY department_id;
 select * FROM departments;
+
+
 -- 6. 각 부서의 이름(department_name)과 해당 부서에 속한 직원 중 가장 높은 급여(highest_salary) 조회하기
 SELECT d.department_name, MAX(e.salary) AS highest_salary
 FROM departments d JOIN employees e
@@ -48,12 +54,13 @@ ON emp.manager_id = mgr.employee_id
 JOIN departments d
 ON emp.department_id = d.department_id;
 
--- 8. 각 직원의 성(last_name)과 해당 직원이 속한 부서의 매니저의 성(last_name) 조회하기
+-- 8. 각 직원의 성(last_name)과 해당 직원이 속한 부서의 매니저의 성(last_name) 조회하기 
+/* 모든 직원 나오게 수정*/
 SELECT emp.last_name AS emp, mgr.last_name AS mgr
 FROM employees emp JOIN employees mgr
 ON emp.manager_id = mgr.employee_id
 JOIN departments d 
-ON d.manager_id = emp.manager_id;
+ON d.manager_id = mgr.employee_id;
 
 -- 9. 각 직원의 성(last_name)과 해당 직원의 보고 상사가 있는 경우 보고 상사의 성(last_name) 조회하기
 SELECT emp.last_name AS emp, mgr.last_name AS mgr
@@ -78,7 +85,7 @@ SELECT d.department_name, d.manager_id, m.last_name AS mgr_name, e.employee_id, 
 FROM departments d JOIN employees m
 ON d.manager_id = m.employee_id
 JOIN employees e
-ON e.manager_id = m.employee_id
+ON e.department_id = m.department_id
 WHERE e.salary > (SELECT AVG(salary)
                     FROM employees
                     WHERE e.department_id = department_id
@@ -90,9 +97,8 @@ ORDER BY d.department_name, e.salary DESC;
 select * from employees where employee_id = '146';
 select department_name from departments where department_id = '80';
 
-select d.department_name, AVG(e.salary)
+select d.department_name, d.department_id, AVG(e.salary)
 from employees e join departments d 
 on e.department_id = d.department_id 
-where d.department_id = '80'
-group by d.department_name;
+group by d.department_name, d.department_id;
 */
